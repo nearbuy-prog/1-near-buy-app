@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+    /* --font-sans and --font-display are injected by next/font in layout.tsx */
+    --font-arabic: "Tahoma", sans-serif;
+  }
+
+  html,
+  body {
+    background-color: #fbf8f3;
+    color: #1f1f1f;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-sans);
+  }
+
+  *,
+  *::before,
+  *::after {
+    border-color: theme("colors.border");
+  }
+
+  /* Better tap targets on mobile */
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Mapbox compatibility */
+  .mapboxgl-popup-content {
+    padding: 0 !important;
+    border-radius: 1rem !important;
+    box-shadow: 0 12px 24px rgba(31, 31, 31, 0.12) !important;
+  }
+  .mapboxgl-popup-tip {
+    border-top-color: white !important;
+  }
+  .mapboxgl-ctrl-attrib {
+    background: rgba(255, 255, 255, 0.7) !important;
+  }
+}
+
+@layer components {
+  .container-app {
+    @apply mx-auto w-full max-w-[480px] sm:max-w-[640px] md:max-w-[768px] lg:max-w-[1080px] px-4;
+  }
+
+  .surface {
+    @apply bg-white rounded-2xl shadow-card;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors;
+  }
+
+  .chip-default {
+    @apply bg-cream text-charcoal hover:bg-warmgray-100;
+  }
+
+  .chip-active {
+    @apply bg-charcoal text-ivory;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* For RTL future readiness — body data-direction can flip later */
+  [dir="rtl"] .rtl-flip {
+    transform: scaleX(-1);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
+  }
+  .safe-top {
+    padding-top: max(env(safe-area-inset-top), 0.5rem);
+  }
+}
