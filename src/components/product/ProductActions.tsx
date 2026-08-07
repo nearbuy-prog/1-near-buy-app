@@ -15,9 +15,10 @@ import {
 import type { Product, Store } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { telHref, whatsappProductHref, mapHref } from "@/lib/utils/contact";
-import { OrderRequestModal } from "./OrderRequestModal";
+import { CheckoutFlow } from "@/components/checkout/CheckoutFlow";
 import { ReserveModal } from "./ReserveModal";
 import { RequestCustomizationModal } from "./RequestCustomizationModal";
+import { getOrderingConfig } from "@/lib/orders/config";
 import { useMessagesStore } from "@/lib/stores/messages-store";
 import { useLanguageStore } from "@/lib/stores/language-store";
 import { t } from "@/lib/i18n/translations";
@@ -48,6 +49,8 @@ export function ProductActions({
     product.fulfillment === "made-to-order";
   // Online/home businesses that don't receive visitors: hide map & directions.
   const showMap = store.accepts_visitors !== false;
+  // Centralized online-ordering config — decides whether Order Online is offered.
+  const ordering = getOrderingConfig(product, store);
 
   const handleMessage = () => {
     const convo = openConvo({ store_id: store.id, product_id: product.id });
@@ -90,7 +93,7 @@ export function ProductActions({
             <Send className="h-4 w-4" />
             {t.product.messageStore[locale]}
           </Button>
-          {store.accepts_online_orders && product.in_stock ? (
+          {ordering.onlineEnabled ? (
             <Button
               variant="default"
               size="lg"
@@ -147,11 +150,13 @@ export function ProductActions({
         </div>
       </div>
 
-      <OrderRequestModal
+      <CheckoutFlow
         product={product}
         store={store}
         open={orderOpen}
         onOpenChange={setOrderOpen}
+        initialSize={selectedSize}
+        initialColor={selectedColor}
       />
       <ReserveModal
         product={product}

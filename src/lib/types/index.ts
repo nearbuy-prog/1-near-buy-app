@@ -119,6 +119,15 @@ export interface Store {
    * across product pages, store pages, and the chat list.
    */
   response_time?: ResponseTime;
+  // --- Online ordering config (optional; defaults derive from
+  //     accepts_online_orders / delivers / pickup_available) ---
+  fulfillment_methods?: FulfillmentMethod[];
+  payment_methods?: PaymentMethod[];
+  /** Flat delivery fee in OMR. */
+  delivery_fee?: number;
+  cod_enabled?: boolean;
+  pay_on_pickup_enabled?: boolean;
+  prep_time_mins?: number;
 }
 
 export type ResponseTime =
@@ -180,6 +189,8 @@ export interface Product {
   featured?: boolean;
   /** Trending = high search-volume products in the city. */
   trending?: boolean;
+  /** Optional overrides for the shared online-ordering feature. */
+  ordering?: ProductOrderingOverrides;
   created_at: string;
 }
 
@@ -291,4 +302,157 @@ export interface Conversation {
 // ---------------------------------------------------------------------------
 
 export type AppMode = "customer" | "seller";
+
+// ---------------------------------------------------------------------------
+// Online ordering — checkout, orders, inventory, addresses.
+//
+// This is a client-side prototype: the "order service" (src/lib/orders) is the
+// single source of truth and is written so it can be swapped for Supabase +
+// a payment gateway later without changing the UI. Nothing here is a real
+// server; server-side enforcement (authz, anti-oversell, payments) arrives in
+// Phase 2.
+// ---------------------------------------------------------------------------
+
+export type FulfillmentMethod = "delivery" | "pickup";
+
+export type PaymentMethod =
+  | "card"          // online card — requires a gateway (sandbox/unavailable for now)
+  | "apple_pay"
+  | "google_pay"
+  | "cod"           // cash on delivery
+  | "pay_on_pickup";
+
+export type PaymentStatus =
+  | "unpaid"
+  | "pending"
+  | "paid"
+  | "pay_on_delivery"
+  | "pay_on_pickup"
+  | "failed"
+  | "refund_pending"
+  | "refunded";
+
+export type OrderStatus =
+  | "pending_payment"
+  | "order_placed"
+  | "awaiting_confirmation"
+  | "confirmed"
+  | "preparing"
+  | "ready_for_pickup"
+  | "out_for_delivery"
+  | "delivered"
+  | "completed"
+  | "rejected"
+  | "cancelled"
+  | "payment_failed"
+  | "refunded";
+
+export interface CustomerAddress {
+  id: string;
+  label?: string;
+  full_name: string;
+  phone: string;
+  email?: string;
+  /** Governorate / city. */
+  governorate: string;
+  area: string;
+  /** Street / building / villa / apartment details. */
+  street: string;
+  landmark?: string;
+  instructions?: string;
+  is_default?: boolean;
+}
+
+/** Line item — a snapshot frozen at purchase time (survives later product edits). */
+export interface OrderItemSnapshot {
+  product_id: string;
+  store_id: string;
+  name_en: string;
+  name_ar: string;
+  image: string;
+  unit_price: number;
+  quantity: number;
+  selected_size?: string;
+  selected_color?: string;
+  line_total: number;
+}
+
+export interface OrderStatusEvent {
+  status: OrderStatus;
+  at: string;
+  by: "customer" | "store" | "system";
+  note?: string;
+}
+
+export interface Order {
+  id: string;
+  order_number: string;
+  /** Idempotency key — repeated submits with the same key return the same order. */
+  client_key: string;
+  /** Local marker for "this browser's" orders (stand-in for a real user id). */
+  mine?: boolean;
+  store_id: string;
+  customer_name: string;
+  customer_phone: string;
+  customer_email?: string;
+  items: OrderItemSnapshot[];
+  fulfillment: FulfillmentMethod;
+  address?: CustomerAddress;
+  subtotal: number;
+  delivery_fee: number;
+  discount: number;
+  tax: number;
+  total: number;
+  payment_method: PaymentMethod;
+  payment_status: PaymentStatus;
+  status: OrderStatus;
+  history: OrderStatusEvent[];
+  customer_note?: string;
+  reject_reason?: string;
+  needs_refund?: boolean;
+  estimated_ready_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Optional per-product overrides for the shared online-ordering feature. */
+export interface ProductOrderingOverrides {
+  /** Turn online ordering off for a single product. */
+  online_ordering?: boolean;
+  /** Fallback total stock when no per-variant map is given. */
+  stock?: number;
+  /** Per-variant stock, keyed by `${size}|${color}` (see variantKey()). */
+  variant_stock?: Record<string, number>;
+  fulfillment_methods?: FulfillmentMethod[];
+  payment_methods?: PaymentMethod[];
+}
+
+export type NotificationAudience = "customer" | "seller";
+
+export type NotificationType =
+  | "order_placed"
+  | "order_confirmed"
+  | "order_rejected"
+  | "order_status"
+  | "order_ready"
+  | "order_out_for_delivery"
+  | "order_delivered"
+  | "order_cancelled"
+  | "payment_completed"
+  | "payment_failed"
+  | "refund_initiated"
+  | "refund_completed";
+
+export interface NotificationItem {
+  id: string;
+  audience: NotificationAudience;
+  /** Present for seller notifications — which store it belongs to. */
+  store_id?: string;
+  order_id: string;
+  order_number: string;
+  type: NotificationType;
+  status?: OrderStatus;
+  created_at: string;
+  read: boolean;
+}
 

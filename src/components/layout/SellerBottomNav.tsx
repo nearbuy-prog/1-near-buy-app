@@ -8,10 +8,12 @@ import {
   MessageSquare,
   CalendarClock,
   Store,
+  ShoppingBag,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useMessagesStore } from "@/lib/stores/messages-store";
 import { useReservationsStore } from "@/lib/stores/reservations-store";
+import { useOrdersStore } from "@/lib/stores/orders-store";
 import { useModeStore } from "@/lib/stores/mode-store";
 
 interface NavItem {
@@ -27,6 +29,13 @@ export function SellerBottomNav() {
   const activeStoreId = useModeStore((s) => s.activeStoreId);
   const conversations = useMessagesStore((s) => s.conversations);
   const reservations = useReservationsStore((s) => s.items);
+  const orders = useOrdersStore((s) => s.items);
+
+  const pendingOrders = orders.reduce(
+    (sum, o) =>
+      o.store_id === activeStoreId && o.status === "awaiting_confirmation" ? sum + 1 : sum,
+    0,
+  );
 
   const unreadForStore = conversations.reduce(
     (sum, c) =>
@@ -46,6 +55,13 @@ export function SellerBottomNav() {
       label: "Dashboard",
       icon: LayoutDashboard,
       match: (p) => p === "/seller",
+    },
+    {
+      href: "/seller/orders",
+      label: "Orders",
+      icon: ShoppingBag,
+      match: (p) => p.startsWith("/seller/orders"),
+      badge: () => pendingOrders,
     },
     {
       href: "/seller/products",

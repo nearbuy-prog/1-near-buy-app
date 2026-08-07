@@ -27,11 +27,14 @@ import { useModeStore } from "@/lib/stores/mode-store";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { useFavoritesStore } from "@/lib/stores/favorites-store";
 import { useLanguageStore } from "@/lib/stores/language-store";
+import { useNotificationsStore } from "@/lib/stores/notifications-store";
+import { useOrdersStore } from "@/lib/stores/orders-store";
 import { useLocale } from "@/lib/hooks/use-locale";
 import { productById, storeById } from "@/lib/data";
 import { formatCountdown } from "@/lib/utils/relative-time";
 import { ResponseTimeBadge } from "@/components/common/ResponseTimeBadge";
 import { t } from "@/lib/i18n/translations";
+import { to } from "@/lib/i18n/orders-i18n";
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-gold-50 text-gold-700",
@@ -51,6 +54,10 @@ export default function ProfilePage() {
   const signOut = useAuthStore((s) => s.signOut);
   const favCount = useFavoritesStore((s) => s.ids.length);
   const locale = useLanguageStore((s) => s.locale);
+  const orderCount = useOrdersStore((s) => s.items.filter((o) => o.mine).length);
+  const unreadNotif = useNotificationsStore(
+    (s) => s.items.filter((x) => x.audience === "customer" && !x.read).length,
+  );
   const { name } = useLocale();
 
   const totalUnread = conversations.reduce(
@@ -77,12 +84,18 @@ export default function ProfilePage() {
             {authUser?.identity || t.profile.role[locale]}
           </p>
         </div>
-        <button
+        <Link
+          href="/notifications"
           aria-label={t.common.notifications[locale]}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-charcoal/70 shadow-soft"
+          className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white text-charcoal/70 shadow-soft"
         >
           <Bell className="h-4 w-4" />
-        </button>
+          {unreadNotif > 0 && (
+            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-terracotta px-1 text-[10px] font-semibold text-ivory">
+              {unreadNotif > 99 ? "99+" : unreadNotif}
+            </span>
+          )}
+        </Link>
       </header>
 
       {/* Quick stats */}
@@ -225,6 +238,18 @@ export default function ProfilePage() {
           {t.profile.account[locale]}
         </h2>
         <ul className="overflow-hidden rounded-2xl bg-white shadow-card">
+          <MenuItem
+            href="/orders"
+            icon={PackageCheck}
+            label={to.orders.my[locale]}
+            badge={orderCount || undefined}
+          />
+          <MenuItem
+            href="/notifications"
+            icon={Bell}
+            label={to.notif.title[locale]}
+            badge={unreadNotif || undefined}
+          />
           <MenuItem
             href="/messages"
             icon={MessageSquare}
