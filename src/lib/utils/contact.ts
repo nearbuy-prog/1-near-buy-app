@@ -21,8 +21,8 @@ export function whatsappStoreHref(store: Store, productName?: string): string {
   const lines = [
     `Hello ${store.name_en},`,
     productName
-      ? `I'm interested in "${productName}" I saw on Nearby.`
-      : `I found your store on Nearby and I have a question.`,
+      ? `I'm interested in "${productName}" I saw on SOUBAK.`
+      : `I found your store on SOUBAK and I have a question.`,
     "Is it available?",
   ];
   const text = encodeURIComponent(lines.join("\n"));
@@ -34,7 +34,7 @@ export function whatsappProductHref(store: Store, product: Product): string {
   const lines = [
     `Hello ${store.name_en},`,
     `I would like to ask about: ${product.name_en}`,
-    `Price on Nearby: ${formatOMR(product.price)}`,
+    `Price on SOUBAK: ${formatOMR(product.price)}`,
     `Is it available? Can I order or reserve it?`,
   ];
   const text = encodeURIComponent(lines.join("\n"));

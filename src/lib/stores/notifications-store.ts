@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { NotificationItem } from "@/lib/types";
+import { usePreferencesStore } from "./preferences-store";
 
 function makeId() {
   return `ntf-${Math.random().toString(36).slice(2, 9)}-${Date.now().toString(36)}`;
@@ -23,13 +24,17 @@ export const useNotificationsStore = create<NotificationsState>()(
   persist(
     (set, get) => ({
       items: [],
-      push: (n) =>
+      push: (n) => {
+        // Respect the customer's notification preference (sellers always get them).
+        if (n.audience === "customer" && !usePreferencesStore.getState().notificationsEnabled)
+          return;
         set((s) => ({
           items: [
             { ...n, id: makeId(), created_at: new Date().toISOString(), read: false },
             ...s.items,
           ].slice(0, 100),
-        })),
+        }));
+      },
       markRead: (id) =>
         set((s) => ({
           items: s.items.map((x) => (x.id === id ? { ...x, read: true } : x)),

@@ -1,6 +1,6 @@
 {
-  "name": "Nearby — Discover stores in your city",
-  "short_name": "Nearby",
+  "name": "SOUBAK — Discover stores in your city",
+  "short_name": "SOUBAK",
   "description": "City-based shopping discovery for Oman. Find products in nearby physical stores.",
   "start_url": "/",
   "display": "standalone",

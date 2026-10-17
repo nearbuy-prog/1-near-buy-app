@@ -13,7 +13,7 @@ export function TopBar() {
   return (
     <header className="sticky top-0 z-40 border-b border-warmgray-200/60 bg-ivory/85 backdrop-blur-md">
       <div className="container-app flex h-14 items-center justify-between gap-3 safe-top">
-        <Link href="/" aria-label="Nearby home" className="flex items-center">
+        <Link href="/" aria-label="SOUBAK home" className="flex items-center">
           <Logo size="md" />
         </Link>
 

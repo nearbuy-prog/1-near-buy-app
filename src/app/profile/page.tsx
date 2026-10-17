@@ -54,6 +54,7 @@ export default function ProfilePage() {
   const signOut = useAuthStore((s) => s.signOut);
   const favCount = useFavoritesStore((s) => s.ids.length);
   const locale = useLanguageStore((s) => s.locale);
+  const setLocale = useLanguageStore((s) => s.setLocale);
   const orderCount = useOrdersStore((s) => s.items.filter((o) => o.mine).length);
   const unreadNotif = useNotificationsStore(
     (s) => s.items.filter((x) => x.audience === "customer" && !x.read).length,
@@ -264,11 +265,11 @@ export default function ProfilePage() {
             chip={t.profile.chipNew[locale]}
           />
           <MenuItem
-            href="#"
             icon={Globe}
             label={`${t.common.language[locale]} · ${locale === "ar" ? "العربية" : "English"}`}
+            onClick={() => setLocale(locale === "en" ? "ar" : "en")}
           />
-          <MenuItem href="#" icon={Settings} label={t.common.settings[locale]} />
+          <MenuItem href="/settings" icon={Settings} label={t.common.settings[locale]} />
         </ul>
       </section>
 
@@ -335,39 +336,52 @@ function StatCard({
 
 function MenuItem({
   href,
+  onClick,
   icon: Icon,
   label,
   badge,
   chip,
 }: {
-  href: string;
+  href?: string;
+  onClick?: () => void;
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   badge?: number;
   chip?: string;
 }) {
+  const rowClass =
+    "flex w-full items-center gap-3 border-b border-warmgray-100 px-4 py-3 text-start transition-colors last:border-b-0 hover:bg-cream/40";
+  const inner = (
+    <>
+      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-cream text-charcoal/80">
+        <Icon className="h-4 w-4" />
+      </span>
+      <span className="flex-1 text-sm font-medium text-charcoal">{label}</span>
+      {chip && (
+        <span className="rounded-full bg-olive/10 px-2 py-0.5 text-[10px] font-semibold uppercase text-olive">
+          {chip}
+        </span>
+      )}
+      {badge !== undefined && badge > 0 && (
+        <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-terracotta px-1.5 text-[10px] font-semibold text-ivory">
+          {badge}
+        </span>
+      )}
+      <ChevronRight className="h-4 w-4 text-warmgray rtl:rotate-180" />
+    </>
+  );
+
   return (
     <li>
-      <Link
-        href={href}
-        className="flex items-center gap-3 border-b border-warmgray-100 px-4 py-3 transition-colors last:border-b-0 hover:bg-cream/40"
-      >
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-cream text-charcoal/80">
-          <Icon className="h-4 w-4" />
-        </span>
-        <span className="flex-1 text-sm font-medium text-charcoal">{label}</span>
-        {chip && (
-          <span className="rounded-full bg-olive/10 px-2 py-0.5 text-[10px] font-semibold uppercase text-olive">
-            {chip}
-          </span>
-        )}
-        {badge !== undefined && badge > 0 && (
-          <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-terracotta px-1.5 text-[10px] font-semibold text-ivory">
-            {badge}
-          </span>
-        )}
-        <ChevronRight className="h-4 w-4 text-warmgray" />
-      </Link>
+      {onClick ? (
+        <button type="button" onClick={onClick} className={rowClass}>
+          {inner}
+        </button>
+      ) : (
+        <Link href={href ?? "#"} className={rowClass}>
+          {inner}
+        </Link>
+      )}
     </li>
   );
 }

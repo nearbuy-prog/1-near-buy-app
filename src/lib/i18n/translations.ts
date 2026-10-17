@@ -8,7 +8,7 @@ import type { Locale } from "@/lib/types";
 
 export const t = {
   brand: {
-    name: { en: "NearBuy", ar: "NearBuy" },
+    name: { en: "SOUBAK", ar: "صوبك" },
     tagline: {
       en: "Discover stores in your city",
       ar: "اكتشف المتاجر في مدينتك",
@@ -177,8 +177,8 @@ export const t = {
     forSellers: { en: "For store owners", ar: "لأصحاب المتاجر" },
     switchSeller: { en: "Switch to Seller Mode", ar: "التبديل لوضع البائع" },
     switchSellerDesc: {
-      en: "Manage products, reservations, messages, and analytics for your store on NearBuy.",
-      ar: "إدارة المنتجات والحجوزات والرسائل والتحليلات لمتجرك على NearBuy.",
+      en: "Manage products, reservations, messages, and analytics for your store on SOUBAK.",
+      ar: "إدارة المنتجات والحجوزات والرسائل والتحليلات لمتجرك على صوبك.",
     },
     continueSeller: { en: "Continue as Seller", ar: "المتابعة كبائع" },
   },

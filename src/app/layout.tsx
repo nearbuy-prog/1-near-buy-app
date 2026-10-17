@@ -21,17 +21,17 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   title: {
-    default: "Nearby — Discover stores in your city",
-    template: "%s · Nearby",
+    default: "SOUBAK — Discover stores in your city",
+    template: "%s · SOUBAK",
   },
   description:
-    "Nearby connects physical stores across Oman into one digital shopping mall. Search for products in Muscat, Salalah, Sohar, Nizwa, Sur, and Barka.",
-  applicationName: "Nearby",
+    "SOUBAK connects physical stores across Oman into one digital shopping mall. Search for products in Muscat, Salalah, Sohar, Nizwa, Sur, and Barka.",
+  applicationName: "SOUBAK",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Nearby",
+    title: "SOUBAK",
   },
   formatDetection: {
     telephone: false,
@@ -41,12 +41,12 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "Nearby — Discover stores in your city",
+    title: "SOUBAK — Discover stores in your city",
     description:
       "Find products in nearby physical stores across Oman: abayas, dishdashas, perfumes, oud, fashion, home and more.",
     type: "website",
     locale: "en_OM",
-    siteName: "Nearby",
+    siteName: "SOUBAK",
   },
 };
 

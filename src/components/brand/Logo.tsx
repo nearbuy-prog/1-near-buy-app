@@ -1,40 +1,29 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Nearby wordmark — text-based, elegant, no childish iconography.
- * Uses a serif (Cormorant via --font-display) for the "N" stamp paired with
- * a clean sans for the rest. The dot becomes a small olive accent.
+ * SOUBAK (صوبك) brand logo. Uses the provided logo artwork as-is; only the
+ * display height changes per placement so it fits each existing slot without
+ * altering the surrounding layout.
  */
 
 interface LogoProps {
   className?: string;
   size?: "sm" | "md" | "lg";
+  /** Retained for API compatibility — the accent dot is part of the artwork. */
   showDot?: boolean;
 }
 
-export function Logo({ className, size = "md", showDot = true }: LogoProps) {
-  const sizes = {
-    sm: "text-lg",
-    md: "text-xl",
-    lg: "text-3xl",
-  };
-
+export function Logo({ className, size = "md" }: LogoProps) {
+  const heights = { sm: "h-8", md: "h-10", lg: "h-28" };
   return (
-    <span
-      className={cn(
-        "inline-flex items-baseline gap-[1px] font-display tracking-tight text-charcoal",
-        sizes[size],
-        className,
-      )}
-    >
-      <span className="font-semibold">Near</span>
-      <span className="font-light italic text-olive">Buy</span>
-      {showDot && (
-        <span
-          aria-hidden
-          className="ml-0.5 inline-block h-1.5 w-1.5 rounded-full bg-gold"
-        />
-      )}
-    </span>
+    <Image
+      src="/soubak-logo.png"
+      alt="SOUBAK صوبك"
+      width={621}
+      height={740}
+      priority
+      className={cn("w-auto select-none", heights[size], className)}
+    />
   );
 }
